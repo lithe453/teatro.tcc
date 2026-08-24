@@ -1,0 +1,181 @@
+# GERENCIADOR DE TEATRO/CINEMA
+# 3 salas com 200 lugares cada
+
+NUM_SALAS = 3
+NUM_FILAS = 10
+LUGARES_POR_FILA = 20
+
+# Criação das 3 salas
+# Cada sala possui 10 filas e 20 lugares
+
+salas = []
+
+for sala in range(NUM_SALAS):
+    teatro = []
+
+    for fila in range(NUM_FILAS):
+        teatro.append([0] * LUGARES_POR_FILA)
+
+    salas.append(teatro)
+
+# MOSTRAR SALA
+
+def mostrar_sala(numero_sala):
+
+    print("-------------------------------")
+    print(f"========= SALA {numero_sala + 1} =========")
+    print("-------------------------------")
+
+    sala = salas[numero_sala]
+
+    for fila in range(NUM_FILAS):
+        print(f"Fila {fila} - ", end="")
+
+        for lugar in sala[fila]:
+            print(lugar, end=" ")
+
+        print()
+
+# ESCOLHER SALA
+
+def escolher_sala():
+
+    print("\n-------------------------------")
+    print("           SALAS")
+    print("-------------------------------")
+
+    for i in range(NUM_SALAS):
+        print(f"{i + 1} - Sala {i + 1}")
+
+    sala = int(input("Escolha uma sala (1 a 3): "))
+
+    if sala < 1 or sala > NUM_SALAS:
+        print("Sala inválida!")
+        return None
+
+    return sala - 1
+
+# RESERVAR LUGAR
+
+def reservar_lugar():
+
+    sala_escolhida = escolher_sala()
+
+    if sala_escolhida is None:
+        return
+
+    mostrar_sala(sala_escolhida)
+
+    fila_escolhida = int(
+        input(f"Escolha uma fila (0 a {NUM_FILAS - 1}): ")
+    )
+
+    lugar_escolhido = int(
+        input(f"Escolha um lugar (0 a {LUGARES_POR_FILA - 1}): ")
+    )
+
+    # Verifica se fila e lugar são válidos
+
+    if fila_escolhida < 0 or fila_escolhida >= NUM_FILAS:
+        print("Fila inválida!")
+        return
+
+    if lugar_escolhido < 0 or lugar_escolhido >= LUGARES_POR_FILA:
+        print("Lugar inválido!")
+        return
+
+    # Verifica se o lugar está disponível
+
+    if salas[sala_escolhida][fila_escolhida][lugar_escolhido] == 0:
+
+        salas[sala_escolhida][fila_escolhida][lugar_escolhido] = 1
+
+        print("Lugar reservado com sucesso!")
+
+    else:
+        print("Esse lugar já está reservado!")
+
+
+# ==========================================
+# CANCELAR RESERVA
+# ==========================================
+
+def cancelar_reserva():
+
+    sala_escolhida = escolher_sala()
+
+    if sala_escolhida is None:
+        return
+
+    mostrar_sala(sala_escolhida)
+
+    fila_escolhida = int(
+        input(f"Escolha uma fila (0 a {NUM_FILAS - 1}): ")
+    )
+
+    lugar_escolhido = int(
+        input(f"Escolha um lugar (0 a {LUGARES_POR_FILA - 1}): ")
+    )
+
+    # Verifica se fila e lugar são válidos
+
+    if fila_escolhida < 0 or fila_escolhida >= NUM_FILAS:
+        print("Fila inválida!")
+        return
+
+    if lugar_escolhido < 0 or lugar_escolhido >= LUGARES_POR_FILA:
+        print("Lugar inválido!")
+        return
+
+    # Verifica se existe reserva
+
+    if salas[sala_escolhida][fila_escolhida][lugar_escolhido] == 1:
+
+        salas[sala_escolhida][fila_escolhida][lugar_escolhido] = 0
+
+        print("Reserva cancelada!")
+
+    else:
+        print("Esse lugar não está reservado!")
+
+# MENU PRINCIPAL
+
+continuar = "s"
+
+while continuar == "s":
+
+    print("\n-------------------------------")
+    print("====== GERENCIADOR ======")
+    print("-------------------------------")
+
+    print("1 - Mostrar sala")
+    print("2 - Reservar lugar")
+    print("3 - Cancelar reserva")
+    print("4 - Fechar o programa")
+
+    op = int(input("Escolha uma opção: "))
+
+    match op:
+
+        case 1:
+
+            sala_escolhida = escolher_sala()
+
+            if sala_escolhida is not None:
+                mostrar_sala(sala_escolhida)
+
+        case 2:
+            reservar_lugar()
+
+        case 3:
+            cancelar_reserva()
+
+        case 4:
+            continuar = input(
+                "Deseja fechar o programa? (s/n): "
+            ).lower()
+
+        case _:
+            print("Opção inválida!")
+
+print("Programa encerrado.")

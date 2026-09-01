@@ -1,17 +1,14 @@
 import tkinter as tk
-from tkinter import messagebox
 
-# ==========================================
-# CONFIGURAÇÕES
-# ==========================================
+# GERENCIADOR DE TEATRO/CINEMA
+# 3 salas com 200 lugares cada
 
 NUM_SALAS = 3
 NUM_FILAS = 10
 LUGARES_POR_FILA = 20
 
-# ==========================================
-# CRIAÇÃO DAS SALAS
-# ==========================================
+# Criação das 3 salas
+# Cada sala possui 10 filas e 20 lugares
 
 salas = []
 
@@ -23,305 +20,164 @@ for sala in range(NUM_SALAS):
 
     salas.append(teatro)
 
-
-# ==========================================
 # MOSTRAR SALA
-# ==========================================
 
-def abrir_mostrar_sala():
+def mostrar_sala(numero_sala):
 
-    janela = tk.Toplevel(root)
-    janela.title("Mostrar Sala")
-    janela.geometry("700x600")
-
-    tk.Label(
-        janela,
-        text="Escolha uma sala:",
-        font=("Arial", 16)
-    ).pack(pady=10)
-
-    # Botões das salas
-    for i in range(NUM_SALAS):
-
-        botao = tk.Button(
-            janela,
-            text=f"Sala {i + 1}",
-            width=20,
-            command=lambda sala=i: mostrar_sala_gui(sala)
-        )
-
-        botao.pack(pady=5)
-
-
-def mostrar_sala_gui(numero_sala):
-
-    janela = tk.Toplevel(root)
-
-    janela.title(f"Sala {numero_sala + 1}")
-    janela.geometry("900x600")
-
-    tk.Label(
-        janela,
-        text=f"SALA {numero_sala + 1}",
-        font=("Arial", 20, "bold")
-    ).pack(pady=10)
-
-    frame = tk.Frame(janela)
-    frame.pack()
+    print("-------------------------------")
+    print(f"========= SALA {numero_sala + 1} =========")
+    print("-------------------------------")
 
     sala = salas[numero_sala]
 
     for fila in range(NUM_FILAS):
+        print(f"Fila {fila} - ", end="")
 
-        tk.Label(
-            frame,
-            text=f"Fila {fila}",
-            width=8
-        ).grid(row=fila, column=0)
+        for lugar in sala[fila]:
+            print(lugar, end=" ")
 
-        for lugar in range(LUGARES_POR_FILA):
+        print()
 
-            if sala[fila][lugar] == 0:
-                cor = "green"
-                texto = str(lugar)
-            else:
-                cor = "red"
-                texto = "X"
+# ESCOLHER SALA
 
-            tk.Label(
-                frame,
-                text=texto,
-                width=3,
-                bg=cor,
-                fg="white"
-            ).grid(
-                row=fila,
-                column=lugar + 1,
-                padx=2,
-                pady=2
-            )
+def escolher_sala():
 
+    print("\n-------------------------------")
+    print("           SALAS")
+    print("---------------------------------")
 
-# ==========================================
+    for i in range(NUM_SALAS):
+        print(f"{i + 1} - Sala {i + 1}")
+
+    sala = int(input("Escolha uma sala (1 a 3): "))
+
+    if sala < 1 or sala > NUM_SALAS:
+        print("Sala inválida!")
+        return None
+
+    return sala - 1
+
 # RESERVAR LUGAR
-# ==========================================
 
-def abrir_reservar():
+def reservar_lugar():
 
-    janela = tk.Toplevel(root)
-    janela.title("Reservar Lugar")
-    janela.geometry("400x350")
+    sala_escolhida = escolher_sala()
 
-    tk.Label(
-        janela,
-        text="Reservar Lugar",
-        font=("Arial", 18, "bold")
-    ).pack(pady=15)
+    if sala_escolhida is None:
+        return
 
-    # Sala
+    mostrar_sala(sala_escolhida)
 
-    tk.Label(janela, text="Sala:").pack()
-
-    sala_var = tk.IntVar(value=1)
-
-    sala_menu = tk.OptionMenu(
-        janela,
-        sala_var,
-        *range(1, NUM_SALAS + 1)
+    fila_escolhida = int(
+        input(f"Escolha uma fila (0 a {NUM_FILAS - 1}): ")
     )
 
-    sala_menu.pack(pady=5)
-
-    # Fila
-
-    tk.Label(janela, text="Fila:").pack()
-
-    fila_var = tk.IntVar(value=0)
-
-    fila_menu = tk.OptionMenu(
-        janela,
-        fila_var,
-        *range(NUM_FILAS)
+    lugar_escolhido = int(
+        input(f"Escolha um lugar (0 a {LUGARES_POR_FILA - 1}): ")
     )
 
-    fila_menu.pack(pady=5)
+    # Verifica se fila e lugar são válidos
 
-    # Lugar
+    if fila_escolhida < 0 or fila_escolhida >= NUM_FILAS:
+        print("Fila inválida!")
+        return
 
-    tk.Label(janela, text="Lugar:").pack()
+    if lugar_escolhido < 0 or lugar_escolhido >= LUGARES_POR_FILA:
+        print("Lugar inválido!")
+        return
 
-    lugar_var = tk.IntVar(value=0)
+    # Verifica se o lugar está disponível
 
-    lugar_menu = tk.OptionMenu(
-        janela,
-        lugar_var,
-        *range(LUGARES_POR_FILA)
-    )
+    if salas[sala_escolhida][fila_escolhida][lugar_escolhido] == 0:
 
-    lugar_menu.pack(pady=5)
+        salas[sala_escolhida][fila_escolhida][lugar_escolhido] = 1
 
-    def reservar():
+        print("Lugar reservado com sucesso!")
 
-        sala = sala_var.get() - 1
-        fila = fila_var.get()
-        lugar = lugar_var.get()
-
-        if salas[sala][fila][lugar] == 0:
-
-            salas[sala][fila][lugar] = 1
-
-            messagebox.showinfo(
-                "Sucesso",
-                "Lugar reservado com sucesso!"
-            )
-
-        else:
-
-            messagebox.showerror(
-                "Erro",
-                "Esse lugar já está reservado!"
-            )
-
-    tk.Button(
-        janela,
-        text="Reservar",
-        width=20,
-        command=reservar
-    ).pack(pady=20)
+    else:
+        print("Esse lugar já está reservado!")
 
 
 # ==========================================
 # CANCELAR RESERVA
 # ==========================================
 
-def abrir_cancelar():
+def cancelar_reserva():
 
-    janela = tk.Toplevel(root)
-    janela.title("Cancelar Reserva")
-    janela.geometry("400x350")
+    sala_escolhida = escolher_sala()
 
-    tk.Label(
-        janela,
-        text="Cancelar Reserva",
-        font=("Arial", 18, "bold")
-    ).pack(pady=15)
+    if sala_escolhida is None:
+        return
 
-    # Sala
+    mostrar_sala(sala_escolhida)
 
-    tk.Label(janela, text="Sala:").pack()
+    fila_escolhida = int(
+        input(f"Escolha uma fila (0 a {NUM_FILAS - 1}): ")
+    )
 
-    sala_var = tk.IntVar(value=1)
+    lugar_escolhido = int(
+        input(f"Escolha um lugar (0 a {LUGARES_POR_FILA - 1}): ")
+    )
 
-    tk.OptionMenu(
-        janela,
-        sala_var,
-        *range(1, NUM_SALAS + 1)
-    ).pack(pady=5)
+    # Verifica se fila e lugar são válidos
 
-    # Fila
+    if fila_escolhida < 0 or fila_escolhida >= NUM_FILAS:
+        print("Fila inválida!")
+        return
 
-    tk.Label(janela, text="Fila:").pack()
+    if lugar_escolhido < 0 or lugar_escolhido >= LUGARES_POR_FILA:
+        print("Lugar inválido!")
+        return
 
-    fila_var = tk.IntVar(value=0)
+    # Verifica se existe reserva
 
-    tk.OptionMenu(
-        janela,
-        fila_var,
-        *range(NUM_FILAS)
-    ).pack(pady=5)
+    if salas[sala_escolhida][fila_escolhida][lugar_escolhido] == 1:
 
-    # Lugar
+        salas[sala_escolhida][fila_escolhida][lugar_escolhido] = 0
 
-    tk.Label(janela, text="Lugar:").pack()
+        print("Reserva cancelada!")
 
-    lugar_var = tk.IntVar(value=0)
+    else:
+        print("Esse lugar não está reservado!")
 
-    tk.OptionMenu(
-        janela,
-        lugar_var,
-        *range(LUGARES_POR_FILA)
-    ).pack(pady=5)
+# MENU PRINCIPAL
 
-    def cancelar():
+continuar = "s"
 
-        sala = sala_var.get() - 1
-        fila = fila_var.get()
-        lugar = lugar_var.get()
+while continuar == "s":
 
-        if salas[sala][fila][lugar] == 1:
+    print("\n-------------------------------")
+    print("====== GERENCIADOR ======")
+    print("-------------------------------")
 
-            salas[sala][fila][lugar] = 0
+    print("1 - Mostrar sala")
+    print("2 - Reservar lugar")
+    print("3 - Cancelar reserva")
+    print("4 - Fechar o programa")
 
-            messagebox.showinfo(
-                "Sucesso",
-                "Reserva cancelada!"
-            )
+    op = int(input("Escolha uma opção: "))
 
-        else:
+    match op:
 
-            messagebox.showerror(
-                "Erro",
-                "Esse lugar não está reservado!"
-            )
+        case 1:
 
-    tk.Button(
-        janela,
-        text="Cancelar reserva",
-        width=20,
-        command=cancelar
-    ).pack(pady=20)
+            sala_escolhida = escolher_sala()
 
+            if sala_escolhida is not None:
+                mostrar_sala(sala_escolhida)
 
-# ==========================================
-# JANELA PRINCIPAL
-# ==========================================
+        case 2:
+            reservar_lugar()
 
-root = tk.Tk()
+        case 3:
+            cancelar_reserva()
 
-root.title("Gerenciador de Teatro/Cinema")
-root.geometry("400x400")
+        case 4:
+            continuar = input(
+                "Deseja fechar o programa? (s/n): "
+            ).lower()
 
-tk.Label(
-    root,
-    text="CINEMA",
-    font=("Roboto", 24, "bold")
-).pack(pady=30)
+        case _:
+            print("Opção inválida!")
 
-
-tk.Button(
-    root,
-    text="1 - Mostrar sala",
-    width=25,
-    height=2,
-    command=abrir_mostrar_sala
-).pack(pady=5)
-
-
-tk.Button(
-    root,
-    text="2 - Reservar lugar",
-    width=25,
-    height=2,
-    command=abrir_reservar
-).pack(pady=5)
-
-
-tk.Button(
-    root,
-    text="3 - Cancelar reserva",
-    width=25,
-    height=2,
-    command=abrir_cancelar
-).pack(pady=5)
-
-
-tk.Button(
-    root,
-    text="4 - Fechar programa",
-    width=25,
-    height=2,
-    command=root.destroy
-).pack(pady=5)
-
-
-root.mainloop()
+print("Programa encerrado.")
